@@ -718,8 +718,175 @@ Thread-2 proceeding after barrierThread-0 proceeding after barrier
 Thread-1 proceeding after barrier
 All threads have passed the barrier.
 
+
 =================================================
+IV- Thread-Safe Data Structures:
 -------------------------------------------------
+1. threading.local():
+threading.local() creates a thread-local storage object, which is a data structure where each thread can store data that is local to it.
+Each thread that accesses the thread-local storage has its own separate copy of the data, preventing conflicts or data corruption.
+
+Use Case:
+Suppose you have a web server that processes multiple requests in parallel, and each request needs its own database connection. You can use threading.local() to store each thread's database connection independently, ensuring they don't interfere with each other.
+
+Example:
+import threading
+
+# Create a thread-local storage object
+local_data = threading.local()
+
+def process_request():
+    # Assign a unique value to the thread's local storage
+    local_data.connection = f"Connection for {threading.current_thread().name}"
+    print(local_data.connection)
+
+# Create multiple threads
+threads = []
+for i in range(3):
+    thread = threading.Thread(target=process_request)
+    threads.append(thread)
+    thread.start()
+
+# Wait for all threads to finish
+for thread in threads:
+    thread.join()
+
+
+Output:
+Connection for Thread-42 (process_request)
+Connection for Thread-43 (process_request)
+Connection for Thread-44 (process_request)
+
+
+-------------------------------------------------------
+2. threading.Timer(interval, function, args=(), kwargs={}):
+threading.Timer creates a timer that waits for a specified interval (in seconds) before executing a function.
+It runs the function in a separate thread after the interval has passed, which is useful for scheduling tasks to run in the future.
+
+Use Case:
+Imagine a scenario where you want to send a reminder email to a user if they haven't responded within 30 minutes. You can use threading.Timer to delay the sending of the reminder.
+
+Example:
+import threading
+
+def send_reminder(user):
+    print(f"Sending reminder to {user}")
+
+# Create a timer that sends a reminder after 30 seconds
+timer = threading.Timer(30, send_reminder, args=("user@example.com",))
+timer.start()
+
+# The main thread continues to run and do other tasks
+print("Main thread is doing other tasks...")
+
+# Optionally, you can cancel the timer if the user responds
+# timer.cancel()
+
+Output:
+Main thread is doing other tasks...
+Sending reminder to user@example.com
+
+=================================================
+V- Other Functions:
+-------------------------------------------------
+
+1. threading.enumerate():
+threading.enumerate() returns a list of all currently active Thread objects. This includes the main thread, and any threads that are still running, but not the ones that have terminated.
+
+Use Case:
+Useful when you want to inspect or manage
+
+Example:
+import threading
+import time
+
+def task():
+    time.sleep(2)
+    print(f"Thread {threading.current_thread().name} is running")
+
+# Create and start multiple threads
+for i in range(3):
+    thread = threading.Thread(target=task)
+    thread.start()
+
+# List all active threads
+active_threads = threading.enumerate()
+print("Active threads:", active_threads)
+
+# Wait for all threads to complete
+for thread in active_threads:
+    if thread != threading.main_thread():  # Avoid joining the main thread
+        thread.join()
+
+
+Output:
+Active threads: [<_MainThread(MainThread, started 133809349816320)>, <Thread(Thread-2 (_thread_main), started daemon 133809185629760)>, <Heartbeat(Thread-3, started daemon 133809102124608)>, <ParentPollerUnix(Thread-1, started daemon 133809062278720)>, <Thread(_colab_inspector_thread, started daemon 133808733009472)>, <Thread(Thread-46 (task), started 133808716224064)>, <Thread(Thread-47 (task), started 133809251022400)>, <Thread(Thread-48 (task), started 133808724616768)>]
+Thread Thread-46 (task) is running
+Thread Thread-47 (task) is running
+Thread Thread-48 (task) is running
+
+--------------------------------------------------
+2. threading.activeCount():
+threading.activeCount() (or threading.active_count() in newer versions of Python) returns the number of currently active threads. It is a simpler way to check how many threads are running without needing to retrieve the actual thread objects.
+
+Use Case:
+Useful when you want to know the count of active threads, such as monitoring the health of your application or deciding when to start new threads.
+
+Example:
+import threading
+import time
+
+def task():
+    time.sleep(2)
+    print(f"Thread {threading.current_thread().name} is running")
+
+# Create and start multiple threads
+for i in range(3):
+    thread = threading.Thread(target=task)
+    thread.start()
+
+# Print the number of active threads
+print("Number of active threads:", threading.activeCount())
+
+
+Output:
+Number of active threads: 8
+<ipython-input-23-cbef9805ea0b>:14: DeprecationWarning: activeCount() is deprecated, use active_count() instead
+  print("Number of active threads:", threading.activeCount())
+
+------------------------------------------------------------
+3. threading.main_thread():
+threading.main_thread() returns the Thread object representing the main thread of the program. The main thread is the thread in which the Python interpreter itself is running, and it's where your program begins execution.
+
+Use Case:
+Useful when you need to differentiate between the main thread and other threads, such as ensuring certain actions are only performed in the main thread.
+
+Example:
+import threading
+
+def task():
+    print(f"Running in: {threading.current_thread().name}")
+
+# Get the main thread
+main_thread = threading.main_thread()
+print(f"Main thread: {main_thread.name}")
+
+# Start a new thread
+thread = threading.Thread(target=task)
+thread.start()
+
+# Check if current thread is the main thread
+if threading.current_thread() == main_thread:
+    print("This is the main thread.")
+
+# Wait for the new thread to finish
+thread.join()
+
+Output:
+Main thread: MainThread
+Running in: Thread-52 (task)
+This is the main thread
+
 
 
 
