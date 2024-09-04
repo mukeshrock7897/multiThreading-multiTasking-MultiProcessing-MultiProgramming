@@ -252,6 +252,168 @@ V- Other Functions:
 
 
 =================================================
+I- Thread Creation
+-------------------------------------------------
+
+1-threading.Thread(target=function, args=(), kwargs={}):
+threading.Thread() is a high-level method provided by the threading module. It creates a new thread object, which can then be started using the .start() method. 
+This method allows you to pass the target function to be executed by the thread, along with any positional (args) and keyword arguments (kwargs) that the function might require.
+
+Use Case: 
+Suitable when you need more control over the thread’s lifecycle, such as being able to start, stop, join, or monitor the thread. This method is ideal for most multithreading scenarios where you may need to manage the thread after its creation, such as waiting for it to finish or handling exceptions within the thread.
+
+Example:
+import threading
+import time
+
+def print_numbers(name, count):
+    for i in range(1, count + 1):
+        time.sleep(1)
+        print(f"{name} prints {i}")
+
+# Create a new thread object
+thread = threading.Thread(target=print_numbers, args=("Thread-1", 5))
+
+# Start the thread
+thread.start()
+
+# Wait for the thread to complete
+thread.join()
+
+print("Main thread completed.")
+
+Output:
+Thread-1 prints 1
+Thread-1 prints 2
+Thread-1 prints 3
+Thread-1 prints 4
+Thread-1 prints 5
+Main thread completed.
+
+------------------------------------------------
+
+2-threading.start_new_thread(function, args=()):
+_thread.start_new_thread() is a low-level method provided by the _thread module (formerly known as thread). This function starts a new thread and immediately runs the target function. Unlike threading.Thread(), it doesn’t create a Thread object, which means there’s no direct way to join or manage the thread after it’s started.
+
+Use Case: 
+This method is useful for simple tasks where you don’t need to manage the thread after it starts, such as running a background task that doesn’t require monitoring or synchronization with the main thread. It’s a more lightweight approach compared to threading.Thread().
+
+Example:
+import _thread
+import time
+
+def print_numbers(name, count):
+    for i in range(1, count + 1):
+        time.sleep(1)
+        print(f"{name} prints {i}")
+
+# Start a new thread using _thread.start_new_thread
+_thread.start_new_thread(print_numbers, ("Thread-2", 5))
+
+# Main thread continues to run
+print("Main thread is free to do other work.")
+
+# Adding sleep to keep the main thread alive
+time.sleep(6)
+print("Main thread completed.")
+
+
+Output:
+Main thread is free to do other work.
+Thread-2 prints 1
+Thread-2 prints 2
+Thread-2 prints 3
+Thread-2 prints 4
+Thread-2 prints 5
+Main thread completed.
+
+
+
+=================================================
+II- Thread Information
+-------------------------------------------------
+
+1- thread.start():
+
+This method starts the thread's activity. It calls the run() method of the thread in a separate, new thread of control.
+Once start() is called, the thread begins its execution independently and concurrently with other threads.
+
+Example:
+import threading
+
+def task():
+    print("Thread is running")
+
+# Create a thread
+thread = threading.Thread(target=task)
+
+# Start the thread
+thread.start()
+
+
+Output:
+Thread is running
+
+-------------------------------------------------
+
+2- thread.join():
+
+This method makes the calling thread (usually the main thread) wait for the thread on which join() is called to terminate.
+It is often used to ensure that a thread has completed its work before proceeding with the next step in the main thread.
+
+Example:
+
+import threading
+
+def task():
+    print("Thread is running")
+
+# Create a thread
+thread = threading.Thread(target=task)
+
+# Start the thread
+thread.start()
+
+# Wait for the thread to finish
+thread.join()
+print("Thread has finished")
+
+
+
+Output:
+Thread is running
+Thread has finished
+
+-------------------------------------------------
+
+3- thread.run():
+
+This method contains the code that the thread will execute when it is started.
+When you define a thread by subclassing Thread, you override the run() method with the code that you want the thread to execute.
+You don't usually call run() directly; it's called by start(). If you call run() directly, it will execute in the current thread, not in a new thread.
+
+Example:
+import threading
+
+class MyThread(threading.Thread):
+    def run(self):
+        print("Thread is running")
+
+# Create a thread
+thread = MyThread()
+
+# Start the thread (which internally calls run())
+thread.start()
+
+# Wait for the thread to finish
+thread.join()
+
+
+Output:
+Thread is running
+
+
+=================================================
 III- Thread Synchronization:
 -------------------------------------------------
 
