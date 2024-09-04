@@ -1,30 +1,27 @@
-Multithreading
+1. What is Multithreading in Python?
 
-### 1. What is Multithreading in Python?
+Multithreading in Python is a technique that allows you to execute multiple threads (smaller units of a process) concurrently within a single process
+This can improve the performance of your program, especially for tasks that involve I/O operations or that can be broken down into independent subtasks
+Python provides the threading module to work with multithreading
 
-Multithreading in Python is a technique that allows multiple parts of a program to execute simultaneously within a single process. This can be beneficial for tasks that are I/O-bound (waiting for input/output operations) or can be broken down into independent subtasks.
+2. Types of Multithreading and Approaches
 
-### 2. Types of Multithreading and Approaches
+- Threading Module: The threading module in Python is a high-level interface for creating and managing threads. It provides classes and functions to create threads, control their execution, and synchronize their access to shared resources. However, due to the Global Interpreter Lock (GIL), it may not be the most efficient choice for CPU-bound tasks, as only one thread can execute Python bytecode at a time.
 
-- **Threading Module**: Provides a high-level interface for working with threads. However, due to the GIL, it may not be effective for CPU-bound tasks.
-- **Multiprocessing Module**: Used to bypass Python's GIL by creating separate processes, each with its own Python interpreter and memory space, enabling true parallelism. This is more effective for CPU-bound tasks.
-- **Asyncio**: An asynchronous I/O framework that is not truly multithreading but allows concurrent code execution using an event loop. It is effective for I/O-bound tasks without being limited by the GIL.
+- Multiprocessing Module: The multiprocessing module in Python is a high-level interface for creating and managing processes. It provides classes and functions to spawn processes, communicate between them, and synchronize their access to shared resources. Unlike the threading module, multiprocessing can bypass the GIL by creating separate processes, each with its own Python interpreter and memory space, enabling true parallelism. This makes it more effective for CPU-bound tasks that can benefit from multiple cores or processors.
+
+- Asyncio: asyncio is an asynchronous I/O framework in Python that provides a way to write concurrent code without using traditional threads. It uses an event loop to manage asynchronous tasks, allowing multiple tasks to be executed concurrently without blocking each other. This makes it particularly effective for I/O-bound tasks, such as network requests or file operations, where the program is often waiting for external events. While asyncio doesn't use true multithreading, it can achieve similar results by efficiently managing asynchronous operations, avoiding the overhead of thread creation and context switching.
 
 
-### Types of Multithreading and Approaches in Python
+To understand these approaches, it's important first to discuss the Global Interpreter Lock (GIL)
 
-Python provides several ways to handle concurrency and parallelism, each with its own strengths and use cases. The most commonly used methods are:
+=================================================
+-------------------------------------------------
 
-1. **Threading Module**
-2. **Multiprocessing Module**
-3. **Asyncio**
-
-To understand these approaches, it's important first to discuss the **Global Interpreter Lock (GIL)**.
-
-#### Global Interpreter Lock (GIL)
-The GIL is a mutex that protects access to Python objects, preventing multiple native threads from executing Python bytecodes simultaneously in a single process. This means that even in a multi-threaded program, only one thread can execute Python code at a time. The GIL can be a significant bottleneck for CPU-bound tasks, where the program's performance is limited by the CPU.
-
-However, the GIL does not affect I/O-bound tasks as much, where the program spends more time waiting for external resources than executing Python code. For I/O-bound tasks, Python's threading can still be effective.
+Global Interpreter Lock (GIL):
+GIL is a mechanism in Python that prevents multiple threads(only one thread can execute Python code at a time) from executing Python bytecodes simultaneously within a single process. 
+This can limit performance for CPU-bound tasks, but has less impact on I/O-bound tasks(GIL does not affect I/O-bound tasks as much).
+The GIL can be a significant bottleneck for CPU-bound tasks, where the program's performance is limited by the CPU
 
 Example: Effect of GIL on CPU-bound Task
 
@@ -65,13 +62,20 @@ thread2.join()
 end_time = time.time()
 print(f"Multi-threaded execution time: {end_time - start_time:.2f} seconds")
 
+Output:
+Single-threaded execution time: 10.30 seconds
+Multi-threaded execution time: 7.15 seconds
+
 Explanation:
 * CPU-bound Task: The cpu_bound_task function performs a computation-intensive task, which sums the squares of numbers from 0 to n. This task is purely CPU-bound and doesn't involve I/O operations.
 * Single-threaded Execution: The task is executed twice sequentially, and the time taken is measured.
 * Multi-threaded Execution: The same task is executed in two separate threads. Because of the GIL, both threads cannot execute Python bytecode simultaneously on a multi-core CPU, which means they don't truly run in parallel.
 
 
-### 1. Threading Module
+=================================================
+-------------------------------------------------
+
+1. Threading Module
 
 The `threading` module in Python provides a way to create and manage threads. Despite the GIL, threading is useful for I/O-bound tasks where the program is waiting for network responses, file I/O, or other external resources.
 
@@ -89,19 +93,32 @@ thread1 = threading.Thread(target=task, args=("One",))
 thread2 = threading.Thread(target=task, args=("Two",))
 
 # Start the threads
+t1= time.perf_counter()
 thread1.start()
 thread2.start()
+t2= time.perf_counter()
 
 # Wait for both threads to complete
 thread1.join()
 thread2.join()
+print(f"total executions time are {t2-t1}")
 
 print("Both threads have finished execution.")
 
+Output:
+Thread One starting
+Thread Two starting
+Thread One finished
+Thread Two finished
+total executions time are 0.011744869999915863
+Both threads have finished execution.
 
 #### Use Cases:
 - **I/O-bound tasks**: When your program needs to wait for external resources like web servers, file systems, or databases.
 - **GUI applications**: To keep the user interface responsive while performing background operations.
+
+=================================================
+-------------------------------------------------
 
 ### 2. Multiprocessing Module
 
@@ -123,19 +140,33 @@ if __name__ == "__main__":
     process2 = multiprocessing.Process(target=task, args=("Two",))
 
     # Start the processes
+    t1= time.perf_counter()
     process1.start()
     process2.start()
 
     # Wait for both processes to complete
     process1.join()
     process2.join()
+    t2= time.perf_counter()
+    print(f"total executions time are {t2-t1}")
 
     print("Both processes have finished execution.")
 
 
+Output:
+Process One starting
+Process Two starting
+Process One finished
+Process Two finished
+total executions time are 2.0482301729998653
+Both processes have finished execution.
+
 #### Use Cases:
 - **CPU-bound tasks**: For computationally intensive tasks like numerical computations, data processing, or image processing.
 - **Parallel processing**: When you need to utilize multiple CPU cores effectively.
+
+=================================================
+-------------------------------------------------
 
 ### 3. Asyncio
 
@@ -144,6 +175,7 @@ if __name__ == "__main__":
 #### Example Code:
 
 import asyncio
+import time
 
 async def task(name):
     print(f"Task {name} starting")
@@ -154,10 +186,23 @@ async def main():
     # Schedule two tasks to run concurrently
     await asyncio.gather(task("One"), task("Two"))
 
-# Run the main function
-asyncio.run(main())
+# Use this instead of asyncio.run() when in a running event loop
+t1 = time.perf_counter()
+loop = asyncio.get_event_loop()  # Get the running event loop
+loop.run_until_complete(main())  # Run the main function
+t2 = time.perf_counter()
 
+print(f"Total execution time is {t2 - t1:.2f} seconds")
 print("All tasks have finished execution.")
+
+
+Output:
+Task One starting
+Task Two starting
+Task One finished
+Task Two finished
+Total execution time is 2.00 seconds
+All tasks have finished execution.
 
 
 #### Use Cases:
@@ -165,16 +210,356 @@ print("All tasks have finished execution.")
 - **Web scraping**: Efficiently handle multiple requests without blocking.
 - **Real-time data processing**: Applications that require real-time data processing, like chat applications, servers, or message brokers.
 
+=================================================
+-------------------------------------------------
 
-### 3. Built-in Functions Available
+### Built-in Functions Available
 
-- **threading.Thread()**: To create a new thread.
-- **threading.Lock()**: To synchronize threads using a lock, ensuring that only one thread executes a particular section of code at a time.
-- **threading.RLock()**: A re-entrant lock.
-- **threading.Condition()**: A condition variable that can be used to wait for some condition to be met.
-- **threading.Event()**: A simple event class to synchronize threads.
-- **threading.Semaphore()**: To control access to a shared resource.
-- **threading.Barrier()**: To make threads wait until all have reached a certain point.
+I- Thread Creation:
+- threading.Thread(target=function, args=(), kwargs={}): Creates a new thread object.
+- threading.start_new_thread(function, args=()): Starts a new thread without creating a Thread object.
+
+II- Thread Control:
+
+- thread.start(): Starts the thread's activity.
+- thread.join(): Waits for the thread to terminate.
+- thread.run(): The method that the thread executes.
+
+II- Thread Information:
+- thread.getName(): Returns the thread's name.
+- thread.setName(name): Sets the thread's name.
+- thread.is_alive(): Returns True if the thread is still running.
+- thread.isDaemon(): Returns True if the thread is a daemon thread.
+- thread.setDaemon(True/False): Sets the thread as a daemon or non-daemon.
+
+
+III- Thread Synchronization:
+- threading.Lock(): Creates a lock object for protecting shared resources.
+- threading.RLock(): Creates a reentrant lock object.
+- threading.Semaphore(value=1): Creates a semaphore object.
+- threading.BoundedSemaphore(value=1): Creates a bounded semaphore object.
+- threading.Condition(): Creates a condition variable.
+
+IV- Thread-Safe Data Structures:
+- threading.local(): Creates a thread-local storage object.
+- threading.Timer(interval, function, args=(), kwargs={}): Creates a timer object that calls a function after a specified interval.
+
+
+V- Other Functions:
+- threading.enumerate(): Returns a list of all active threads.
+- threading.activeCount(): Returns the number of active threads.
+- threading.main_thread(): Returns the main thread object.
+
+
+=================================================
+III- Thread Synchronization:
+-------------------------------------------------
+
+1. threading.Thread()
+create a new thread
+
+Use Case:
+Creating a new thread to run a function in parallel with the main program. For example, downloading multiple files concurrently.
+
+Example:
+
+import threading
+import time
+
+def download_file(file_name):
+    print(f"Starting download: {file_name}")
+    time.sleep(2)  # Simulate download time
+    print(f"Finished download: {file_name}")
+
+# Creating threads
+thread1 = threading.Thread(target=download_file, args=("file1.zip",))
+thread2 = threading.Thread(target=download_file, args=("file2.zip",))
+
+# Starting threads
+thread1.start()
+thread2.start()
+
+# Waiting for threads to complete
+thread1.join()
+thread2.join()
+
+print("All downloads completed.")
+
+=================================================
+-------------------------------------------------
+
+2. threading.Lock():
+To synchronize threads using a lock, ensuring that only one thread executes a particular section of code at a time.
+
+Use Case:
+Managing access to a shared resource (e.g., a shared database or file) to prevent race conditions.
+
+Example:
+import threading
+
+balance = 0
+balance_lock = threading.Lock()
+
+def deposit(amount):
+    global balance
+    with balance_lock:  # Ensure only one thread modifies the balance at a time
+        local_balance = balance
+        local_balance += amount
+        time.sleep(1)  # Simulate a delay
+        balance = local_balance
+        print(f"Deposited {amount}, New balance: {balance}")
+
+# Creating threads
+threads = []
+for i in range(5):
+    thread = threading.Thread(target=deposit, args=(100,))
+    threads.append(thread)
+    thread.start()
+
+# Waiting for all threads to complete
+for thread in threads:
+    thread.join()
+
+print(f"Final balance: {balance}")
+
+Output:
+Deposited 100, New balance: 100
+Deposited 100, New balance: 200
+Deposited 100, New balance: 300
+Deposited 100, New balance: 400
+Deposited 100, New balance: 500
+Final balance: 500
+
+=================================================
+-------------------------------------------------
+
+
+3. threading.RLock():
+A re-entrant lock
+
+Use Case:
+Using a re-entrant lock when a thread might need to acquire the same lock multiple times. Useful in recursive functions.
+
+Example:
+import threading
+
+lock = threading.RLock()
+
+def recursive_task(n):
+    with lock:
+        if n > 0:
+            print(f"Task {n} running")
+            recursive_task(n - 1)
+
+# Starting the task in a thread
+thread = threading.Thread(target=recursive_task, args=(5,))
+thread.start()
+thread.join()
+
+print("Recursive task completed.")
+
+Output:
+Task 5 running
+Task 4 running
+Task 3 running
+Task 2 running
+Task 1 running
+Recursive task completed
+
+=================================================
+-------------------------------------------------
+
+
+4. threading.Condition():
+A condition variable that can be used to wait for some condition to be met.
+
+Use Case:
+Synchronizing threads by making one or more threads wait until a specific condition is met, such as producer-consumer scenarios.
+
+Example:
+import threading
+
+condition = threading.Condition()
+items = []
+
+def producer():
+    with condition:
+        for i in range(1, 6):
+            items.append(i)
+            print(f"Produced item {i}")
+            condition.notify()  # Notify consumers that a new item is available
+            time.sleep(1)
+
+def consumer():
+    with condition:
+        while len(items) == 0:
+            condition.wait()  # Wait until an item is produced
+        item = items.pop(0)
+        print(f"Consumed item {item}")
+
+# Starting threads
+producer_thread = threading.Thread(target=producer)
+consumer_thread = threading.Thread(target=consumer)
+
+producer_thread.start()
+consumer_thread.start()
+
+producer_thread.join()
+consumer_thread.join()
+
+print("Production and consumption completed.")
+
+Output:
+Produced item 1
+Produced item 2
+Produced item 3
+Produced item 4
+Produced item 5
+Consumed item 1
+Production and consumption completed.
+
+
+=================================================
+-------------------------------------------------
+
+
+5. threading.Event():
+A simple event class to synchronize threads.
+
+Use Case:
+Signaling between threads, such as stopping a thread or waiting for an event to occur before proceeding.
+
+Example:
+import threading
+
+event = threading.Event()
+
+def task():
+    print("Waiting for event to start...")
+    event.wait()  # Wait for the event to be set
+    print("Event occurred! Task running...")
+
+# Starting the task in a thread
+thread = threading.Thread(target=task)
+thread.start()
+
+time.sleep(3)  # Simulate delay
+print("Setting event")
+event.set()  # Trigger the event
+
+thread.join()
+
+print("Task completed.")
+
+Output:
+Waiting for event to start...
+Setting event
+Event occurred! Task running...
+Task completed.
+
+
+=================================================
+-------------------------------------------------
+
+6. threading.Semaphore():
+To control access to a shared resource
+
+Use Case:
+Controlling access to a limited resource, like a connection pool where only a fixed number of connections are allowed simultaneously.
+
+Example:
+import threading
+import time
+
+semaphore = threading.Semaphore(2)  # Allow only 2 threads to access the resource
+
+def access_resource(thread_num):
+    print(f"Thread-{thread_num} waiting to access the resource...")
+    with semaphore:
+        print(f"Thread-{thread_num} accessing the resource")
+        time.sleep(2)  # Simulate resource usage
+    print(f"Thread-{thread_num} released the resource")
+
+# Starting threads
+threads = []
+for i in range(5):
+    thread = threading.Thread(target=access_resource, args=(i,))
+    threads.append(thread)
+    thread.start()
+
+for thread in threads:
+    thread.join()
+
+print("All threads have completed.")
+
+Output:
+Thread-0 waiting to access the resource...
+Thread-0 accessing the resource
+Thread-1 waiting to access the resource...
+Thread-1 accessing the resource
+Thread-2 waiting to access the resource...
+Thread-3 waiting to access the resource...
+Thread-4 waiting to access the resource...
+Thread-0 released the resourceThread-1 released the resource
+Thread-3 accessing the resourceThread-2 accessing the resource
+
+
+Thread-3 released the resourceThread-2 released the resource
+
+Thread-4 accessing the resource
+Thread-4 released the resource
+All threads have completed.
+
+=================================================
+-------------------------------------------------
+
+7. threading.Barrier():
+To make threads wait until all have reached a certain point.
+
+Use Case:
+Synchronizing threads such that they all wait until each has reached a certain point before any can proceed. Useful in scenarios like parallel algorithms where all threads must complete one phase before moving to the next.
+
+Example:
+import threading
+
+barrier = threading.Barrier(3)
+
+def task(thread_num):
+    print(f"Thread-{thread_num} is working...")
+    time.sleep(thread_num)  # Simulate different workloads
+    print(f"Thread-{thread_num} reached the barrier")
+    barrier.wait()  # Wait until all threads reach this point
+    print(f"Thread-{thread_num} proceeding after barrier")
+
+# Starting threads
+threads = []
+for i in range(3):
+    thread = threading.Thread(target=task, args=(i,))
+    threads.append(thread)
+    thread.start()
+
+for thread in threads:
+    thread.join()
+
+print("All threads have passed the barrier.")
+
+
+Output:
+Thread-0 is working...
+Thread-1 is working...
+Thread-0 reached the barrier
+Thread-2 is working...
+Thread-1 reached the barrier
+Thread-2 reached the barrier
+Thread-2 proceeding after barrierThread-0 proceeding after barrier
+
+Thread-1 proceeding after barrier
+All threads have passed the barrier.
+
+=================================================
+-------------------------------------------------
+
+
 
 ### 4. Why Use Multithreading? Real-Time Use Case
 
