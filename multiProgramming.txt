@@ -1,1 +1,30 @@
+Multiprogramming
+================
+
+i- Definition: Multiprogramming is a method where multiple programs are loaded into memory and executed by the operating system concurrently. It focuses on maximizing CPU utilization.
+
+ii- Objective: The main goal is to improve system efficiency by ensuring the CPU remains busy while some processes wait for resources (e.g., I/O operations).
+
+iii- Execution: The operating system manages switching between processes based on events like I/O completion, not user intervention. When one process is waiting, the OS switches to another process.
+
+iv- Process Scheduling: In multiprogramming, the OS decides which process to execute next based on criteria such as resource availability, time spent waiting, or priorities assigned.
+
+v- Difference from Multitasking: While multitasking involves frequently switching between tasks to give the impression of parallel execution, multiprogramming focuses on switching between programs as needed, often due to events like I/O completion.
+
+vi- Memory Management: Multiple programs are kept in memory simultaneously, but only one is actively using the CPU at a time. The operating system allocates and manages memory for each program.
+
+vii- Concurrency: Multiprogramming allows concurrent execution, meaning processes may overlap in their execution but not necessarily run simultaneously (unlike parallel processing on multiple CPUs).
+
+viii- Resource Utilization: It enhances system resource utilization, as while one process waits for I/O, another can be using the CPU.
+
+ix- Python and Multiprogramming: Python doesn’t manage OS-level scheduling but can simulate multiprogramming using its multiprocessing module. This module allows Python to spawn multiple processes, each with its own memory space, effectively mimicking concurrent execution.
+
+x- Historical Context: Multiprogramming was a foundational concept for early operating systems to make better use of expensive computing resources by overlapping computation and I/O.
+
+how multiprogramming works:
+
+i- Multiple Programs: Several programs are loaded into memory simultaneously.
+ii- Time-Sharing: The operating system allocates time slices to each program, allowing them to execute in turn.
+iii- Context Switching: When a program's time slice expires, the operating system switches to another program, saving the state of the current program and restoring the state of the next one.
+
 
