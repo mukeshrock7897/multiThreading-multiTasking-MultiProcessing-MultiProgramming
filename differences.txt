@@ -1,0 +1,41 @@
+Differences
+
+1-Context:
+
+Multitasking: Manages execution of multiple tasks at OS level (can be process or thread based).
+Multithreading: Manages multiple threads within a single process (efficient communication but limited parallelism in Python).
+Multiprocessing: Runs multiple processes in parallel (each with independent memory) for CPU-bound tasks.
+Multiprogramming: Runs multiple independent programs by switching between them to maximize CPU utilization.
+Asyncio: Runs multiple tasks concurrently within a single thread (ideal for I/O-bound operations).
+
+2-Concurrency vs. Parallelism:
+
+Multitasking: Provides concurrency (or parallelism if process-based).
+Multithreading: Provides concurrency (parallelism limited by Python’s GIL).
+Multiprocessing: Provides true parallelism (uses multiple CPU cores).
+Multiprogramming: Provides concurrency (by switching between programs, no parallelism).
+Asyncio: Provides concurrency (non-blocking, cooperative multitasking, no parallelism).
+
+3-Use Cases:
+
+Multitasking: General-purpose, running multiple applications (I/O- or CPU-bound).
+Multithreading: I/O-bound tasks (networking, file I/O) where threads can run independently.
+Multiprocessing: CPU-bound tasks (data processing, heavy computations).
+Multiprogramming: Maximizing CPU usage by switching between multiple programs.
+Asyncio: I/O-bound tasks that benefit from non-blocking execution (e.g., web servers, network operations).
+
+4-Resource Sharing:
+
+Multitasking: Varies (processes don’t share resources; threads do).
+Multithreading: Threads share memory/resources.
+Multiprocessing: Processes do not share memory; need IPC for communication.
+Multiprogramming: Programs are isolated, but may share system resources like memory.
+Asyncio: Tasks share memory and resources, as they run in a single thread.
+
+5-Parallelism:
+
+Multitasking: Can achieve parallelism (if process-based).
+Multithreading: Concurrency only (in Python due to GIL), no parallelism for CPU-bound tasks.
+Multiprocessing: True parallelism.
+Multiprogramming: Concurrency, not parallelism.
+Asyncio: Concurrency, no parallelism (cooperative multitasking).
