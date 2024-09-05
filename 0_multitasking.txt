@@ -7,8 +7,8 @@ This can be achieved through two primary mechanisms
 ============================
 1-Thread Based multitasking
 ----------------------------
-1. Thread-based multitasking is a form of multitasking where multiple threads are used to execute different tasks concurrently within a single process. Threads are lighter than processes and share the same memory space. Each thread runs independently, enabling multiple tasks to run concurrently within the same program. This is useful when you want to perform multiple operations simultaneously, like handling user input while performing background tasks.
-Thread Based multitasking also known as multithreading
+- Thread-based multitasking is a form of multitasking where multiple threads are used to execute different tasks concurrently within a single process. Threads are lighter than processes and share the same memory space. Each thread runs independently, enabling multiple tasks to run concurrently within the same program. This is useful when you want to perform multiple operations simultaneously, like handling user input while performing background tasks.
+- Thread Based multitasking also known as multithreading
 
 
 In thread-based multitasking:
@@ -18,31 +18,30 @@ In thread-based multitasking:
 2. Thread-Based Multitasking Approaches
 There are two common approaches to thread-based multitasking:
 
-- **Pre-emptive Multitasking**: The operating system controls thread scheduling, switching between threads based on certain conditions like time slices. Threads are interrupted to ensure fair CPU time distribution.
+- Pre-emptive Multitasking: The operating system controls thread scheduling, switching between threads based on certain conditions like time slices. Threads are interrupted to ensure fair CPU time distribution.
   - Example: Most operating systems use pre-emptive multitasking to manage processes and threads.
 
-- **Cooperative Multitasking**: Threads voluntarily yield control of the CPU to allow other threads to run. Threads must explicitly yield control, and they cooperate to manage multitasking.
+- Cooperative Multitasking: Threads voluntarily yield control of the CPU to allow other threads to run. Threads must explicitly yield control, and they cooperate to manage multitasking.
   - Example: In some event-driven systems, like certain UI frameworks, threads yield when waiting for user input.
 
-### 3. **Built-in Functions for Thread-Based Multitasking**
+3. Built-in Functions for Thread-Based Multitasking
 Python provides a `threading` module that facilitates thread-based multitasking. Some of the commonly used functions include:
 
-- **`threading.Thread(target, args)`**: Creates a new thread that executes the specified `target` function with the given `args`.
+- `threading.Thread(target, args)`: Creates a new thread that executes the specified `target` function with the given `args`.
   
-- **`threading.start()`**: Starts the thread’s execution.
+- `threading.start()`: Starts the thread’s execution.
   
-- **`threading.join()`**: Blocks the calling thread until the thread whose `join()` is called finishes execution.
+- `threading.join()`: Blocks the calling thread until the thread whose `join()` is called finishes execution.
   
-- **`threading.enumerate()`**: Returns a list of all currently active threads.
+- `threading.enumerate()`: Returns a list of all currently active threads.
   
-- **`threading.activeCount()`**: Returns the number of currently active threads.
+- `threading.activeCount()`: Returns the number of currently active threads.
   
-- **`threading.Lock()`**: A lock object to ensure that only one thread at a time can access a particular section of the code.
+- `threading.Lock()`: A lock object to ensure that only one thread at a time can access a particular section of the code.
 
-### 4. **Real-Time Use Case**
-A common real-time use case for thread-based multitasking is a **web server**. A web server needs to handle multiple user requests at the same time. Each request (such as loading a webpage) can be handled by a separate thread. This allows the server to manage thousands of users simultaneously.
+4. Real-Time Use Case
+A common real-time use case for thread-based multitasking is a web server. A web server needs to handle multiple user requests at the same time. Each request (such as loading a webpage) can be handled by a separate thread. This allows the server to manage thousands of users simultaneously.
 
-```python
 import threading
 import time
 
@@ -55,14 +54,11 @@ def handle_request(request_id):
 for i in range(5):
     thread = threading.Thread(target=handle_request, args=(i,))
     thread.start()
-```
 
 In this example, each web request is handled by a separate thread, allowing multiple requests to be processed concurrently.
 
-### 5. **Implementations**
-Here’s an example of thread-based multitasking using Python's `threading` module.
+5. Implementations
 
-```python
 import threading
 import time
 
@@ -89,25 +85,86 @@ thread1.join()
 thread2.join()
 
 print("Both threads have finished")
-```
+
+Output:
+Number: 1
+Letter: a
+Number: 2
+Letter: b
+Number: 3
+Letter: c
+Number: 4
+Letter: d
+Number: 5
+Letter: e
+Both threads have finished
+
 
 In this implementation:
 - Two threads are created: one for printing numbers and another for printing letters.
 - They run concurrently and independently of each other.
 
-### 6. **Advantages and Disadvantages**
+6. Advantages and Disadvantages
 
-#### Advantages:
-1. **Efficient Resource Sharing**: Threads share the same memory space, so they can communicate more efficiently than separate processes.
-2. **Low Overhead**: Threads are lighter than processes and have lower overhead since they share resources.
-3. **Concurrency**: Multiple threads can run concurrently, improving responsiveness. For example, in GUI applications, you can handle background tasks while keeping the interface responsive.
-4. **Parallelism**: Threads can be executed on multiple cores, leading to better performance for CPU-bound tasks in systems with multiple cores.
+Advantages:
+1. Efficient Resource Sharing: Threads share the same memory space, so they can communicate more efficiently than separate processes.
+2. Low Overhead: Threads are lighter than processes and have lower overhead since they share resources.
+3. Concurrency: Multiple threads can run concurrently, improving responsiveness. For example, in GUI applications, you can handle background tasks while keeping the interface responsive.
+4. Parallelism: Threads can be executed on multiple cores, leading to better performance for CPU-bound tasks in systems with multiple cores.
 
-#### Disadvantages:
-1. **Complexity**: Managing multiple threads can make the program more complex and harder to debug due to race conditions, deadlocks, and synchronization issues.
-2. **Global Interpreter Lock (GIL)**: In Python, the GIL prevents true parallelism for CPU-bound tasks because only one thread can execute Python bytecode at a time. This limits the performance benefit of multi-threading for CPU-intensive operations.
-3. **Data Corruption**: Since threads share the same memory, improper synchronization (e.g., using locks) can lead to data corruption or inconsistent state if multiple threads access shared data simultaneously.
-4. **Overhead of Context Switching**: Switching between threads requires context switching, which can be costly if overdone.
+Disadvantages:
+1. Complexity: Managing multiple threads can make the program more complex and harder to debug due to race conditions, deadlocks, and synchronization issues.
+2. Global Interpreter Lock (GIL): In Python, the GIL prevents true parallelism for CPU-bound tasks because only one thread can execute Python bytecode at a time. This limits the performance benefit of multi-threading for CPU-intensive operations.
+3. Data Corruption: Since threads share the same memory, improper synchronization (e.g., using locks) can lead to data corruption or inconsistent state if multiple threads access shared data simultaneously.
+4. Overhead of Context Switching: Switching between threads requires context switching, which can be costly if overdone.
 
-### Conclusion
-Thread-based multitasking is a powerful technique for improving the performance and responsiveness of applications that need to handle multiple tasks concurrently. While it can improve efficiency, it also comes with challenges like increased complexity and potential performance limitations due to Python’s GIL for CPU-bound tasks. Proper synchronization mechanisms, like locks, are critical to prevent issues like race conditions and deadlocks.
+
+
+============================
+2-Process Based multitasking
+----------------------------
+- Process-based multitasking is a technique where multiple processes run concurrently, with each process having its own memory space and resources. Unlike threads, processes do not share memory directly, and communication between them typically occurs via inter-process communication (IPC) mechanisms like pipes, message queues, or shared memory.
+-  Process based multitasking as known as multiprocessing 
+- Python provides a multiprocessing module to handle process-based multitasking
+
+Example:
+import multiprocessing
+import time
+
+# Define a function to be executed in a separate process
+def task(task_id):
+    print(f"Task {task_id} is starting")
+    time.sleep(2)  # Simulate a long-running task
+    print(f"Task {task_id} is completed")
+
+if __name__ == '__main__':
+    # Create multiple processes
+    processes = []
+    for i in range(5):
+        process = multiprocessing.Process(target=task, args=(i,))
+        processes.append(process)
+    
+    # Start all processes
+    for process in processes:
+        process.start()
+    
+    # Wait for all processes to finish
+    for process in processes:
+        process.join()
+
+    print("All tasks are completed.")
+
+Output:
+Task 0 is startingTask 1 is starting
+
+Task 2 is starting
+Task 3 is starting
+Task 4 is starting
+Task 1 is completedTask 0 is completed
+
+Task 2 is completed
+Task 3 is completed
+Task 4 is completed
+All tasks are completed.
+
+
